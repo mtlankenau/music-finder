@@ -19,7 +19,7 @@ function musicTermFinder(event) {
     }
 };
 
-function albumApiFunction() {
+function albumApiFunction(event) {
     // text entered into input is now 'searchedMusicTerm' variable, converted to lowercase
     var searchedMusicTerm = searchInputEl.value.toLowerCase();
     // sets album entity query parameter as a variable
@@ -48,9 +48,10 @@ function albumApiFunction() {
                 }
             };
         })
+        event.preventDefault();
 };
 
-function concertsApiFunction() {
+function concertsApiFunction(event) {
     // text entered into input is now 'searchedMusicTerm' variable, converted to lowercase
     var searchedMusicTerm = searchInputEl.value.toLowerCase();
 
@@ -61,4 +62,5 @@ function concertsApiFunction() {
         .then(function(data) {
             console.log(data);
         })
-}
+        event.preventDefault();
+};
