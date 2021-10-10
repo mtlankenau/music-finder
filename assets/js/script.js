@@ -9,6 +9,7 @@ searchButtonEl.addEventListener("click", musicTermFinder);
 
 // function run after clicking the search button
 function musicTermFinder(event) {
+    event.preventDefault();
     // if 'I want to see their albums' checkbox is checked,
     if (albumCheckboxEl.checked === true) {
         albumApiFunction();
@@ -19,7 +20,7 @@ function musicTermFinder(event) {
     }
 };
 
-function albumApiFunction(event) {
+function albumApiFunction() {
     // text entered into input is now 'searchedMusicTerm' variable, converted to lowercase
     var searchedMusicTerm = searchInputEl.value.toLowerCase();
     // sets album entity query parameter as a variable
@@ -48,10 +49,9 @@ function albumApiFunction(event) {
                 }
             };
         })
-        event.preventDefault();
 };
 
-function concertsApiFunction(event) {
+function concertsApiFunction() {
     // text entered into input is now 'searchedMusicTerm' variable, converted to lowercase
     var searchedMusicTerm = searchInputEl.value.toLowerCase();
 
@@ -62,5 +62,4 @@ function concertsApiFunction(event) {
         .then(function(data) {
             console.log(data);
         })
-        event.preventDefault();
 };
