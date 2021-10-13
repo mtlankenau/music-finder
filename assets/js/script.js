@@ -31,7 +31,6 @@ function albumIconAdjuster() {
 };
 
 function concertsIconAdjuster() {
-    console.log(concertsIconEl.textContent);
     if (concertsIconEl.textContent === "add") {
         concertsIconEl.textContent = "";
         concertsIconEl.textContent = "event";
@@ -118,7 +117,6 @@ function concertsApiFunction() {
     	return response.json();
     })
     .then(function(data) {
-      console.log(data);
 			for (var i = 0; i < data._embedded.events.length; i++) {
 				if (searchedMusicTerm.includes(data._embedded.events[i].name.toLowerCase()) && data._embedded.events[i].dates.status.code == "onsale") {
 				// object with album name, genre, release date, and url
@@ -130,8 +128,9 @@ function concertsApiFunction() {
 							ticketAvailability: data._embedded.events[i].dates.status.code,
 							buyTicketsUrl: data._embedded.events[i].url
 				}
-				// logs object with information
 				console.log(venueDataObject);
+				// logs object with information
+				// console.log(venueDataObject);
 				// createVenueCards(venueDataObject);
 				}
 			}	
