@@ -1,0 +1,24 @@
+.bg-image {
+    background: linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(../images/concert.bg.jpg);
+    background-color: #000;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    position: relative;
+}
+
+form {
+    margin-top: 50px;
+}
+
+/* a {
+    margin: 5px;
+} */
+
+button {
+    margin-top: 20px;
+}
+
+label.white-text {
+    font-size: 16px;
+}
