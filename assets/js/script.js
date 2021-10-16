@@ -7,6 +7,8 @@ const concertsSelectorEl = document.querySelector("#concerts");
 const concertsIconEl = document.querySelector("#concerts-icon");
 const favoriteAlbumButtonEl = document.getElementsByClassName("favorite-album");
 const favoriteAlbumIconEl = document.getElementsByClassName("favorite-album-icon");
+const favoriteVenueButtonEl = document.getElementsByClassName("favorite-venue");
+const favoriteVenueIconEl = document.getElementsByClassName("favorite-venue-icon");
 const albumCardsContainerEl = document.querySelector("#album-cards-container");
 const venueCardsContainerEl = document.querySelector("#venue-cards-container");
 
@@ -45,58 +47,42 @@ function concertsIconAdjuster() {
     }
 };
 
-function selectFavoriteAlbum() {
+function selectFavoriteAlbum(albumCardContentAnchorIEl) {
+	console.log(albumCardContentAnchorIEl);
 	console.log(favoriteAlbumIconEl);
 	for (var i = 0; i < favoriteAlbumIconEl.length; i++) {
-		if (favoriteAlbumIconEl[i].textContent === "favorite_border" && !favoriteAlbumIconEl[i].classList.contains("clicked")) {
+		if (favoriteAlbumIconEl[i].textContent === "favorite_border" && albumCardContentAnchorIEl.target.id === favoriteAlbumIconEl[i].id) {
 				favoriteAlbumIconEl[i].textContent = "";
 				favoriteAlbumIconEl[i].textContent = "favorite";
 				favoriteAlbumButtonEl[i].classList.add("pulse");
-				favoriteAlbumIconEl[i].classList.add("clicked");
-				console.log(favoriteAlbumIconEl[i].classList.contains("clicked"));
 				return;
 		}
-		else if (favoriteAlbumIconEl[i].textContent === "favorite" && favoriteAlbumIconEl[i].classList.contains("clicked")) {
+		else if (favoriteAlbumIconEl[i].textContent === "favorite" && albumCardContentAnchorIEl.target.id === favoriteAlbumIconEl[i].id) {
 				favoriteAlbumIconEl[i].textContent = "";
 				favoriteAlbumIconEl[i].textContent = "favorite_border";
 				favoriteAlbumButtonEl[i].classList.remove("pulse");
-				favoriteAlbumIconEl[i].classList.add("unclicked");
 				return;
 		}
 	};
-    // if (favoriteAlbumIconEl.textContent === "favorite_border") {
-    //     favoriteAlbumIconEl.textContent = "";
-    //     favoriteAlbumIconEl.textContent = "favorite";
-    //     favoriteAlbumButtonEl.classList.add("pulse");
-    //     return;
-    // }
-    // if (favoriteAlbumIconEl.textContent === "favorite") {
-		// 		favoriteAlbumIconEl.textContent = "";
-    //     favoriteAlbumIconEl.textContent = "favorite_border";
-    //     favoriteAlbumButtonEl.classList.remove("pulse");
-    //     return;
-    // }
 };
 
-function selectFavoriteConcert() {
-	// console.log(favoriteAlbumIconEl);
-	// for (var i = 0; i < favoriteAlbumIconEl.length; i++) {
-	// 	if (favoriteAlbumIconEl[i].textContent === "favorite_border" && !favoriteAlbumIconEl[i].classList.contains("clicked")) {
-	// 			favoriteAlbumIconEl[i].textContent = "";
-	// 			favoriteAlbumIconEl[i].textContent = "favorite";
-	// 			favoriteAlbumButtonEl[i].classList.add("pulse");
-	// 			favoriteAlbumIconEl[i].classList.add("clicked");
-	// 			console.log(favoriteAlbumIconEl[i].classList.contains("clicked"));
-	// 			return;
-	// 	}
-	// 	else if (favoriteAlbumIconEl[i].textContent === "favorite" && favoriteAlbumIconEl[i].classList.contains("clicked")) {
-	// 			favoriteAlbumIconEl[i].textContent = "";
-	// 			favoriteAlbumIconEl[i].textContent = "favorite_border";
-	// 			favoriteAlbumButtonEl[i].classList.remove("pulse");
-	// 			favoriteAlbumIconEl[i].classList.replace("clicked", "unclicked");
-	// 			return;
-	// 	}
-	// };
+function selectFavoriteConcert(venueCardContentAnchorIEl) {
+	console.log(venueCardContentAnchorIEl);
+	console.log(favoriteVenueIconEl);
+	for (var i = 0; i < favoriteVenueIconEl.length; i++) {
+		if (favoriteVenueIconEl[i].textContent === "favorite_border" && venueCardContentAnchorIEl.target.id === favoriteVenueIconEl[i].id) {
+				favoriteVenueIconEl[i].textContent = "";
+				favoriteVenueIconEl[i].textContent = "favorite";
+				favoriteVenueButtonEl[i].classList.add("pulse");
+				return;
+		}
+		else if (favoriteVenueIconEl[i].textContent === "favorite" && venueCardContentAnchorIEl.target.id === favoriteVenueIconEl[i].id) {
+				favoriteVenueIconEl[i].textContent = "";
+				favoriteVenueIconEl[i].textContent = "favorite_border";
+				favoriteVenueButtonEl[i].classList.remove("pulse");
+				return;
+		}
+	};
 };
 // function run after clicking the search button
 function musicTermFinder(event) {
@@ -269,7 +255,7 @@ function createAlbumCards(albumDataObject) {
 	albumCardContentSpanIEl.setAttribute("class", "material-icons right");
 	albumCardContentAnchorEl.setAttribute("id", "favorite-album");
 	albumCardContentAnchorEl.setAttribute("class", "btn-floating halfway-fab waves-effect waves-light red accent-3 favorite-album");
-	albumCardContentAnchorIEl.setAttribute("id", "favorite-album-icon");
+	albumCardContentAnchorIEl.setAttribute("id", albumDataObject.albumName);
 	albumCardContentAnchorIEl.setAttribute("class", "material-icons favorite-album-icon");
 	albumCardContentAnchorIEl.addEventListener("click", selectFavoriteAlbum);
 	albumCardContentParagraphAnchorEl.setAttribute("href", albumDataObject.albumUrl);
@@ -353,10 +339,10 @@ function createVenueCards(venueDataObject) {
 	venueCardContentEl.setAttribute("class", "card-content");
 	venueCardContentSpanEl.setAttribute("class", "card-title activator grey-text text-darken-4");
 	venueCardContentSpanIEl.setAttribute("class", "material-icons right");
-	venueCardContentAnchorEl.setAttribute("id", "favorite-album");
-	venueCardContentAnchorEl.setAttribute("class", "btn-floating halfway-fab waves-effect waves-light red accent-3 favorite-album");
-	venueCardContentAnchorIEl.setAttribute("id", "favorite-album-icon");
-	venueCardContentAnchorIEl.setAttribute("class", "material-icons favorite-album-icon");
+	venueCardContentAnchorEl.setAttribute("id", "favorite-venue");
+	venueCardContentAnchorEl.setAttribute("class", "btn-floating halfway-fab waves-effect waves-light red accent-3 favorite-venue");
+	venueCardContentAnchorIEl.setAttribute("id", venueDataObject.venueName + venueDataObject.eventStartDate);
+	venueCardContentAnchorIEl.setAttribute("class", "material-icons favorite-venue-icon");
 	venueCardContentAnchorIEl.addEventListener("click", selectFavoriteConcert);
 	venueCardContentParagraphAnchorEl.setAttribute("href", venueDataObject.buyTicketsUrl);
 	venueCardContentParagraphAnchorEl.setAttribute("target", "_blank");
