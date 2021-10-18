@@ -1,6 +1,6 @@
 # Weather Dashboard
 
-<img src="assets/images/readme-screenshot.jpg" alt="Music Finder Application picture">
+![readme-screenshot](https://user-images.githubusercontent.com/85750642/137653285-fe8d0416-91d2-4d98-baa8-ab4a5a7a01ad.JPG)
 
 ## Background
 For our coding bootcamp's first group project, we were tasked with creating a fully functional front-end application, utilizing data fetched from two APIs.  Using the iTunes Search API and the Ticketmaster Discovery API, we created our Music Finder application!
