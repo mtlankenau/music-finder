@@ -1,4 +1,4 @@
-# Weather Dashboard
+# Music Finder
 
 ![readme-screenshot](https://user-images.githubusercontent.com/85750642/137653285-fe8d0416-91d2-4d98-baa8-ab4a5a7a01ad.JPG)
 
