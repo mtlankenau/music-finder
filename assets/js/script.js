@@ -58,18 +58,17 @@ function concertsIconAdjuster() {
 };
 
 function selectFavoriteAlbum(albumDataObject) {
-	console.log(albumDataObject);
 	for (var i = 0; i < favoriteAlbumIconEl.length; i++) {
 		if (favoriteAlbumIconEl[i].textContent === "favorite_border" && albumDataObject.albumName === favoriteAlbumIconEl[i].id) {
 				favoriteAlbumIconEl[i].textContent = "";
 				favoriteAlbumIconEl[i].textContent = "favorite";
 				favoriteAlbumButtonEl[i].classList.add("pulse");
-				console.log(savedAlbumsArray);
-				if (savedAlbumsArray.includes(albumDataObject)) {
-					break;
+				for (var i = 0; i <savedAlbumsArray.length; i++) {
+					if (savedAlbumsArray[i].albumName === albumDataObject.albumName) {
+						return;
+					}
 				}
 				savedAlbumsArray.push(albumDataObject);
-				console.log(savedAlbumsArray);
 				localStorage.setItem("saved-albums", JSON.stringify(savedAlbumsArray));
 				return;
 		}
@@ -80,7 +79,6 @@ function selectFavoriteAlbum(albumDataObject) {
 				for (var i = 0; i < savedAlbumsArray.length; i++) {
 					if (savedAlbumsArray[i].albumName === albumDataObject.albumName) {
 						savedAlbumsArray.splice(i, 1);
-						console.log(savedAlbumsArray);
 					}
 				};
 				localStorage.clear("saved-albums");
@@ -91,13 +89,16 @@ function selectFavoriteAlbum(albumDataObject) {
 };
 
 function selectFavoriteConcert(venueDataObject) {
-	console.log(venueDataObject);
-	console.log(favoriteVenueIconEl);
 	for (var i = 0; i < favoriteVenueIconEl.length; i++) {
 		if (favoriteVenueIconEl[i].textContent === "favorite_border" && (venueDataObject.venueName + venueDataObject.eventStartDate) === favoriteVenueIconEl[i].id) {
 				favoriteVenueIconEl[i].textContent = "";
 				favoriteVenueIconEl[i].textContent = "favorite";
 				favoriteVenueButtonEl[i].classList.add("pulse");
+				for (var i = 0; i <savedVenuesArray.length; i++) {
+					if ((savedVenuesArray[i].venueName + savedVenuesArray[i].eventStartDate) === (venueDataObject.venueName + venueDataObject.eventStartDate)) {
+						return;
+					}
+				}
 				savedVenuesArray.push(venueDataObject);
 				localStorage.setItem("saved-venues", JSON.stringify(savedVenuesArray));
 				return;
@@ -143,11 +144,9 @@ function albumApiFunction() {
       return response.json();
     })
     .then(function(data) {
-			console.log(data);
 			if (data.resultCount !== 0) {
 				// loops through each album, index 0 - 9
 				for (var i = 0; i < data.results.length; i++) {
-					console.log(searchedMusicTerm + data.results[i].artistName.toLowerCase());
 					if (data.results[i].artistName.toLowerCase().includes(searchedMusicTerm)) {
 						// object with album name, genre, release date, and url
 						var albumDataObject = {
@@ -160,8 +159,7 @@ function albumApiFunction() {
 								albumUrl: data.results[i].collectionViewUrl,
 								albumArt: data.results[i].artworkUrl100
 						}
-						// logs object with information
-						console.log(albumDataObject);
+						// run create album cards function, passing through albumDataObject
 						createAlbumCards(albumDataObject);
 					}
 					if (data.results.length === 0) {
@@ -185,13 +183,12 @@ function concertsApiFunction() {
 	venueCardsContainerEl.innerHTML = "";
   // text entered into input is now 'searchedMusicTerm' variable, converted to lowercase
   var searchedMusicTerm = searchInputEl.value.toLowerCase();
-
+	// fetch API for searched music term
   fetch("https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + searchedMusicTerm + "&apikey=ff5u94LXWXFZZinXI0G9v1Y5GICPDiG5")
   	.then(function(response) {
     	return response.json();
     })
     .then(function(data) {
-      console.log(data);
 			if (data.page.totalElements !== 0) {
 				for (var i = 0; i < data._embedded.events.length; i++) {
 					if (searchedMusicTerm.includes(data._embedded.events[i].name.toLowerCase()) && data._embedded.events[i].dates.status.code == "onsale") {
@@ -205,10 +202,10 @@ function concertsApiFunction() {
 								buyTicketsUrl: data._embedded.events[i].url,
 								cardImage: data._embedded.events[i].images[0].url
 						}
-						// logs object with information
-						console.log(venueDataObject);
+						// run create venue cards function, passing through venueDataObject
 						createVenueCards(venueDataObject);
 					}
+					// alert user if there aren't any concerts for searched artist (finds artist, but no events)
 					if (data._embedded.events.length === 0) {
 						venueCardsContainerEl.innerHTML = "";
 						var warningMessage = document.createElement("h2");
@@ -216,6 +213,7 @@ function concertsApiFunction() {
 						venueCardsContainerEl.appendChild(warningMessage);
 					}
 				}
+			// also alert	user if there aren't any concerts for searched artist (can't find artist at all)
 			} else if (!venueDataObject) {
 					venueCardsContainerEl.innerHTML = "";
 					var warningMessage = document.createElement("h2");
@@ -225,6 +223,7 @@ function concertsApiFunction() {
     })
 };
 
+// creates albumCards for each album returned by API for searched artist
 function createAlbumCards(albumDataObject) {
 	// create elements
 	var albumCardDivEl = document.createElement("div");
@@ -309,8 +308,7 @@ function createAlbumCards(albumDataObject) {
 	albumCardsContainerEl.appendChild(albumCardDivEl);
 };
 
-
-
+// creates venueCards for each album returned by API for searched artist
 function createVenueCards(venueDataObject) {
 	//elements
 	var venueCardDivEl = document.createElement("div");
@@ -405,7 +403,6 @@ function showAlert() {
 function reloadSavedAlbumCards() {
 	var getLocalStorageAlbums = localStorage.getItem("saved-albums");
 	var albumDataObject = JSON.parse(getLocalStorageAlbums);
-	console.log(albumDataObject);
 	// create cards from albumDataObject stored in localStorage
 	for (var i = 0; i < albumDataObject.length; i++) {
 		createAlbumCards(albumDataObject[i]);
@@ -420,7 +417,6 @@ function reloadSavedAlbumCards() {
 function reloadSavedVenueCards() {
 	var getLocalStorageVenues = localStorage.getItem("saved-venues");
 	var venueDataObject = JSON.parse(getLocalStorageVenues);
-	console.log(venueDataObject);
 	// create cards from venueDataObject stored in localStorage
 	for (var i = 0; i < venueDataObject.length; i++) {
 		createVenueCards(venueDataObject[i]);
@@ -434,26 +430,28 @@ function reloadSavedVenueCards() {
 // on page load, function updates savedAlbumsArray to match the local storage object using keyword 'saved-albums'
 function localStorageReloadSavedAlbums() {
 	var reloadSavedAlbumsArray = localStorage.getItem("saved-albums");
+	// if array is empty (no saved albums), don't do anything 
 	if (reloadSavedAlbumsArray === null) {
-		console.log(reloadSavedAlbumsArray);
-	} else {
+		reloadSavedAlbumsArray = reloadSavedAlbumsArray;
+	} 
+	// else if array is not empty, parse the array
+	else {
 		var parsedReload = JSON.parse(reloadSavedAlbumsArray);
-		console.log(parsedReload);
 		savedAlbumsArray = parsedReload;
-		console.log(savedAlbumsArray);
 	}
 };
 
 // on page load, function updates savedVenuesArray to match the local storage object using keyword 'saved-venues'
 function localStorageReloadSavedVenues() {
 	var reloadSavedVenuesArray = localStorage.getItem("saved-venues");
+	// if array is empty (no saved concerts), don't do anything 
 	if (reloadSavedVenuesArray === null) {
-		console.log(reloadSavedVenuesArray);
-	} else {
+		reloadSavedVenuesArray = reloadSavedVenuesArray;
+	} 
+	// else if array is not empty, parse the array
+	else {
 		var parsedReload = JSON.parse(reloadSavedVenuesArray);
-		console.log(parsedReload);
 		savedVenuesArray = parsedReload;
-		console.log(savedVenuesArray);
 	}
 };
 
