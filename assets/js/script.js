@@ -1,4 +1,6 @@
 // global variables
+let savedAlbumsArray = [];
+let savedVenuesArray = [];
 const searchInputEl = document.querySelector("#artist-name");
 const searchButtonEl = document.querySelector("#search-button");
 const albumSelectorEl = document.querySelector("#album");
@@ -11,22 +13,26 @@ const favoriteVenueButtonEl = document.getElementsByClassName("favorite-venue");
 const favoriteVenueIconEl = document.getElementsByClassName("favorite-venue-icon");
 const albumCardsContainerEl = document.querySelector("#album-cards-container");
 const venueCardsContainerEl = document.querySelector("#venue-cards-container");
+const loadFavoriteAlbumsButtonEl = document.getElementById("favorite-albums-reload-button");
+const loadFavoriteConcertsButtonEl = document.getElementById("favorite-concerts-reload-button");
 
 // event listener for search button click
 albumSelectorEl.addEventListener("click", albumIconAdjuster);
 concertsSelectorEl.addEventListener("click", concertsIconAdjuster);
 searchButtonEl.addEventListener("click", musicTermFinder);
+loadFavoriteAlbumsButtonEl.addEventListener("click", reloadSavedAlbumCards);
+loadFavoriteConcertsButtonEl.addEventListener("click", reloadSavedVenueCards);
 
 function albumIconAdjuster() {
     if (albumIconEl.textContent === "add") {
         albumIconEl.textContent = "";
-        albumIconEl.textContent = "album"
+        albumIconEl.textContent = "album";
         albumSelectorEl.classList.add("pulse")
         return;
     }
     if (albumIconEl.textContent === "album") {
         albumIconEl.textContent = "";
-        albumIconEl.textContent = "add"
+        albumIconEl.textContent = "add";
         albumSelectorEl.classList.remove("pulse")
         return;
     }
@@ -47,39 +53,62 @@ function concertsIconAdjuster() {
     }
 };
 
-function selectFavoriteAlbum(albumCardContentAnchorIEl) {
-	console.log(albumCardContentAnchorIEl);
-	console.log(favoriteAlbumIconEl);
+function selectFavoriteAlbum(albumDataObject) {
+	console.log(albumDataObject);
 	for (var i = 0; i < favoriteAlbumIconEl.length; i++) {
-		if (favoriteAlbumIconEl[i].textContent === "favorite_border" && albumCardContentAnchorIEl.target.id === favoriteAlbumIconEl[i].id) {
+		if (favoriteAlbumIconEl[i].textContent === "favorite_border" && albumDataObject.albumName === favoriteAlbumIconEl[i].id) {
 				favoriteAlbumIconEl[i].textContent = "";
 				favoriteAlbumIconEl[i].textContent = "favorite";
 				favoriteAlbumButtonEl[i].classList.add("pulse");
+				console.log(savedAlbumsArray);
+				if (savedAlbumsArray.includes(albumDataObject)) {
+					break;
+				}
+				savedAlbumsArray.push(albumDataObject);
+				console.log(savedAlbumsArray);
+				localStorage.setItem("saved-albums", JSON.stringify(savedAlbumsArray));
 				return;
 		}
-		else if (favoriteAlbumIconEl[i].textContent === "favorite" && albumCardContentAnchorIEl.target.id === favoriteAlbumIconEl[i].id) {
+		else if (favoriteAlbumIconEl[i].textContent === "favorite" && albumDataObject.albumName === favoriteAlbumIconEl[i].id) {
 				favoriteAlbumIconEl[i].textContent = "";
 				favoriteAlbumIconEl[i].textContent = "favorite_border";
 				favoriteAlbumButtonEl[i].classList.remove("pulse");
+				for (var i = 0; i < savedAlbumsArray.length; i++) {
+					if (savedAlbumsArray[i].albumName === albumDataObject.albumName) {
+						savedAlbumsArray.splice(i, 1);
+						console.log(savedAlbumsArray);
+					}
+				};
+				localStorage.clear("saved-albums");
+				localStorage.setItem("saved-albums", JSON.stringify(savedAlbumsArray));
 				return;
 		}
 	};
 };
 
-function selectFavoriteConcert(venueCardContentAnchorIEl) {
-	console.log(venueCardContentAnchorIEl);
+function selectFavoriteConcert(venueDataObject) {
+	console.log(venueDataObject);
 	console.log(favoriteVenueIconEl);
 	for (var i = 0; i < favoriteVenueIconEl.length; i++) {
-		if (favoriteVenueIconEl[i].textContent === "favorite_border" && venueCardContentAnchorIEl.target.id === favoriteVenueIconEl[i].id) {
+		if (favoriteVenueIconEl[i].textContent === "favorite_border" && (venueDataObject.venueName + venueDataObject.eventStartDate) === favoriteVenueIconEl[i].id) {
 				favoriteVenueIconEl[i].textContent = "";
 				favoriteVenueIconEl[i].textContent = "favorite";
 				favoriteVenueButtonEl[i].classList.add("pulse");
+				savedVenuesArray.push(venueDataObject);
+				localStorage.setItem("saved-venues", JSON.stringify(savedVenuesArray));
 				return;
 		}
-		else if (favoriteVenueIconEl[i].textContent === "favorite" && venueCardContentAnchorIEl.target.id === favoriteVenueIconEl[i].id) {
+		else if (favoriteVenueIconEl[i].textContent === "favorite" && venueDataObject.venueName === favoriteVenueIconEl[i].id) {
 				favoriteVenueIconEl[i].textContent = "";
 				favoriteVenueIconEl[i].textContent = "favorite_border";
 				favoriteVenueButtonEl[i].classList.remove("pulse");
+				for (var i = 0; i < favoriteVenueIconEl.length; i++) {
+					if (savedVenuesArray[i].venueName == venueDataObject.venueName) {
+						savedVenuesArray.splice(i, 1);
+					}
+				};
+				localStorage.clear("saved-venues");
+				localStorage.setItem("saved-venues", JSON.stringify(savedVenuesArray));
 				return;
 		}
 	};
@@ -100,7 +129,7 @@ function musicTermFinder(event) {
 function albumApiFunction() {
 	// clears out previous album cards in container div
 	albumCardsContainerEl.innerHTML = "";
-  // text entered into input is now 'searchedMusicTerm' variable, converted to lowercase
+  // // text entered into input is now 'searchedMusicTerm' variable, converted to lowercase
   var searchedMusicTerm = searchInputEl.value.toLowerCase();
   // sets album entity query parameter as a variable
   var albumEntity = "&entity=album";
@@ -116,7 +145,7 @@ function albumApiFunction() {
 				for (var i = 0; i < data.results.length; i++) {
 					console.log(searchedMusicTerm + data.results[i].artistName.toLowerCase());
 					if (data.results[i].artistName.toLowerCase().includes(searchedMusicTerm)) {
-				// object with album name, genre, release date, and url
+						// object with album name, genre, release date, and url
 						var albumDataObject = {
 								albumArtistName: data.results[i].artistName,
 								albumName: data.results[i].collectionName,
@@ -146,34 +175,6 @@ function albumApiFunction() {
 			}
 		})			
 };
-// 			// loops through each album, index 0 - 9
-// 			for (var i = 0; i < data.results.length; i++) {
-// 				console.log(searchedMusicTerm + data.results[i].artistName.toLowerCase());
-// 				if (data.results[i].artistName.toLowerCase().includes(searchedMusicTerm)) {
-// 				// object with album name, genre, release date, and url
-// 					var albumDataObject = {
-// 							albumArtistName: data.results[i].artistName,
-// 							albumName: data.results[i].collectionName,
-// 							albumGenre: data.results[i].primaryGenreName,
-// 							albumReleaseDate: data.results[i].releaseDate,
-// 							albumTrackCount: data.results[i].trackCount,
-// 							albumCopyright: data.results[i].copyright,
-// 							albumUrl: data.results[i].collectionViewUrl,
-// 							albumArt: data.results[i].artworkUrl100
-// 					}
-// 					// logs object with information
-// 					console.log(albumDataObject);
-// 					createAlbumCards(albumDataObject);
-//     		} 
-// 				if (data.results.length === 0 || data.resultCount === 0) {
-// 					albumCardsContainerEl.innerHTML = "";
-// 					var warningMessage = document.createElement("h2");
-// 					warningMessage.textContent = "There were no albums found for this artist!";
-// 					albumCardsContainerEl.appendChild(warningMessage);
-// 				}
-// 			}
-//     })
-// };
 
 function concertsApiFunction() {
 	// clears out previous album cards in container div
@@ -190,7 +191,7 @@ function concertsApiFunction() {
 			if (data.page.totalElements !== 0) {
 				for (var i = 0; i < data._embedded.events.length; i++) {
 					if (searchedMusicTerm.includes(data._embedded.events[i].name.toLowerCase()) && data._embedded.events[i].dates.status.code == "onsale") {
-					// object with album name, genre, release date, and url
+						// object with venue name, artist name, venue address, event start date, ticket availability, ticketmaster url, and card image
 						var venueDataObject = {
 								venueName: data._embedded.events[i]._embedded.venues[0].name,
 								artistName: data._embedded.events[i].name,
@@ -244,7 +245,7 @@ function createAlbumCards(albumDataObject) {
 	var albumCardRevealLi5El = document.createElement("li");
 
 	// add appropriate attributes for materialize.css to use
-	albumCardDivEl.setAttribute("class", "col s3 hoverable");
+	albumCardDivEl.setAttribute("class", "col s12 m6 l3 hoverable");
 	albumCardEl.setAttribute("class", "card medium");
 	albumCardImageDivEl.setAttribute("class", "card-image waves-effect waves-block waves-light");
 	albumCardImageEl.setAttribute("class", "activator");
@@ -257,7 +258,7 @@ function createAlbumCards(albumDataObject) {
 	albumCardContentAnchorEl.setAttribute("class", "btn-floating halfway-fab waves-effect waves-light red accent-3 favorite-album");
 	albumCardContentAnchorIEl.setAttribute("id", albumDataObject.albumName);
 	albumCardContentAnchorIEl.setAttribute("class", "material-icons favorite-album-icon");
-	albumCardContentAnchorIEl.addEventListener("click", selectFavoriteAlbum);
+	albumCardContentAnchorIEl.addEventListener("click", function(){selectFavoriteAlbum(albumDataObject)});
 	albumCardContentParagraphAnchorEl.setAttribute("href", albumDataObject.albumUrl);
 	albumCardContentParagraphAnchorEl.setAttribute("target", "_blank");
 	albumCardRevealDivEl.setAttribute("class", "card-reveal");
@@ -330,7 +331,7 @@ function createVenueCards(venueDataObject) {
 	var venueCardRevealLi4El = document.createElement("li");
 
 	//css attributes
-	venueCardDivEl.setAttribute("class", "col s3 hoverable");
+	venueCardDivEl.setAttribute("class", "col s12 m6 l3 hoverable");
 	venueCardEl.setAttribute("class", "card medium");
 	venueCardImageDivEl.setAttribute("class", "card-image waves-effect waves-block waves-light");
 	venueCardImageEl.setAttribute("class", "activator");
@@ -343,7 +344,7 @@ function createVenueCards(venueDataObject) {
 	venueCardContentAnchorEl.setAttribute("class", "btn-floating halfway-fab waves-effect waves-light red accent-3 favorite-venue");
 	venueCardContentAnchorIEl.setAttribute("id", venueDataObject.venueName + venueDataObject.eventStartDate);
 	venueCardContentAnchorIEl.setAttribute("class", "material-icons favorite-venue-icon");
-	venueCardContentAnchorIEl.addEventListener("click", selectFavoriteConcert);
+	venueCardContentAnchorIEl.addEventListener("click", function(){selectFavoriteConcert(venueDataObject)});
 	venueCardContentParagraphAnchorEl.setAttribute("href", venueDataObject.buyTicketsUrl);
 	venueCardContentParagraphAnchorEl.setAttribute("target", "_blank");
 	venueCardRevealDivEl.setAttribute("class", "card-reveal");
@@ -388,9 +389,69 @@ function createVenueCards(venueDataObject) {
 	venueCardsContainerEl.appendChild(venueCardDivEl);
 };
 
+// function if neither the album or concert buttons are selected and search button is clicked
 function showAlert() {
 	albumCardsContainerEl.innerHTML = "";
 	var warningMessage = document.createElement("h2");
 	warningMessage.textContent = "Please select one of the buttons before searching!";
 	albumCardsContainerEl.appendChild(warningMessage);
 };
+
+// function when 'saved albums' button in navbar is clicked. gets saved albums object from local storage
+function reloadSavedAlbumCards() {
+	var getLocalStorageAlbums = localStorage.getItem("saved-albums");
+	var albumDataObject = JSON.parse(getLocalStorageAlbums);
+	console.log(albumDataObject);
+	// create cards from albumDataObject stored in localStorage
+	for (var i = 0; i < albumDataObject.length; i++) {
+		createAlbumCards(albumDataObject[i]);
+		// add materialize styling to indicate that the albums are currently favorited/saved
+		favoriteAlbumIconEl[i].textContent = "";
+		favoriteAlbumIconEl[i].textContent = "favorite";
+		favoriteAlbumButtonEl[i].classList.add("pulse");
+	}
+};
+
+// function when 'saved concerts' button in navbar is clicked. gets saved albums object from local storage
+function reloadSavedVenueCards() {
+	var getLocalStorageVenues = localStorage.getItem("saved-venues");
+	var venueDataObject = JSON.parse(getLocalStorageVenues);
+	console.log(venueDataObject);
+	// create cards from venueDataObject stored in localStorage
+	for (var i = 0; i < venueDataObject.length; i++) {
+		createVenueCards(venueDataObject[i]);
+		// add materialize styling to indicate that the concerts are currently favorited/saved
+		favoriteVenueIconEl[i].textContent = "";
+		favoriteVenueIconEl[i].textContent = "favorite";
+		favoriteVenueButtonEl[i].classList.add("pulse");
+	}
+};
+
+// on page load, function updates savedAlbumsArray to match the local storage object using keyword 'saved-albums'
+function localStorageReloadSavedAlbums() {
+	var reloadSavedAlbumsArray = localStorage.getItem("saved-albums");
+	if (reloadSavedAlbumsArray === null) {
+		console.log(reloadSavedAlbumsArray);
+	} else {
+		var parsedReload = JSON.parse(reloadSavedAlbumsArray);
+		console.log(parsedReload);
+		savedAlbumsArray = parsedReload;
+		console.log(savedAlbumsArray);
+	}
+};
+
+// on page load, function updates savedVenuesArray to match the local storage object using keyword 'saved-venues'
+function localStorageReloadSavedVenues() {
+	var reloadSavedVenuesArray = localStorage.getItem("saved-venues");
+	if (reloadSavedVenuesArray === null) {
+		console.log(reloadSavedVenuesArray);
+	} else {
+		var parsedReload = JSON.parse(reloadSavedVenuesArray);
+		console.log(parsedReload);
+		savedVenuesArray = parsedReload;
+		console.log(savedVenuesArray);
+	}
+};
+
+localStorageReloadSavedAlbums();
+localStorageReloadSavedVenues();
