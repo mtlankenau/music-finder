@@ -15,13 +15,17 @@ const albumCardsContainerEl = document.querySelector("#album-cards-container");
 const venueCardsContainerEl = document.querySelector("#venue-cards-container");
 const loadFavoriteAlbumsButtonEl = document.getElementById("favorite-albums-reload-button");
 const loadFavoriteConcertsButtonEl = document.getElementById("favorite-concerts-reload-button");
+const loadFavoriteAlbumsButtonSidenavEl = document.getElementById("favorite-albums-reload-button-sidenav");
+const loadFavoriteConcertsButtonSidenavEl = document.getElementById("favorite-concerts-reload-button-sidenav");
 
 // event listener for search button click
 albumSelectorEl.addEventListener("click", albumIconAdjuster);
 concertsSelectorEl.addEventListener("click", concertsIconAdjuster);
 searchButtonEl.addEventListener("click", musicTermFinder);
 loadFavoriteAlbumsButtonEl.addEventListener("click", reloadSavedAlbumCards);
+loadFavoriteAlbumsButtonSidenavEl.addEventListener("click", reloadSavedAlbumCards);
 loadFavoriteConcertsButtonEl.addEventListener("click", reloadSavedVenueCards);
+loadFavoriteConcertsButtonSidenavEl.addEventListener("click", reloadSavedVenueCards);
 
 function albumIconAdjuster() {
     if (albumIconEl.textContent === "add") {

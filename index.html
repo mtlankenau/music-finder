@@ -15,12 +15,19 @@
     <nav>
         <div class="nav-wrapper red darken-4">
           <a href="#" class="brand-logo">Music Finder</a>
+          <a href="#" class="sidenav-trigger" data-target="mobile-links">
+              <i class="material-icons">menu</i>
+          </a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><button id="favorite-albums-reload-button" class="btn btn-large waves-effect waves-light red accent-3 white-text"><i class="material-icons left">favorite</i>Saved Albums<i class="material-icons right">album</i></button></li>
             <li><button id="favorite-concerts-reload-button" class="btn btn-large waves-effect waves-light red accent-3 white-text"><i class="material-icons left">favorite</i>Saved Concerts<i class="material-icons right">event</i></button></li>
           </ul>
         </div>
     </nav>
+    <ul class="sidenav" id="mobile-links">
+        <li><button id="favorite-albums-reload-button-sidenav" class="btn btn-large waves-effect waves-light red accent-3 white-text favorite-albums-reload-button"><i class="material-icons left">favorite</i>Saved Albums<i class="material-icons right">album</i></button></li>
+        <li><button id="favorite-concerts-reload-button-sidenav" class="btn btn-large waves-effect waves-light red accent-3 white-text favorite-concerts-reload-button"><i class="material-icons left">favorite</i>Saved Concerts<i class="material-icons right">event</i></button></li>
+    </ul>
     <div class="section no-pad-bot bg-image overlay" id="index-banner">
         <div class="container">
             <div class="row">
@@ -97,6 +104,11 @@
     </div>
 </body>
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.sidenav').sidenav();
+    })
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script src="assets/js/script.js"></script>
 </html>
